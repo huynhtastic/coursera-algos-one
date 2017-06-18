@@ -5,16 +5,17 @@ public class WeightedPCQuickUnionUF {
 	private int[] sz;
 
 	/**
-	 * Constructor set id of each object to itself and size at each index to 1
+	 * Constructor sets id of each object to itself and size at each index to 1
 	 * indices are components; values are the parents/roots
 	 * runtime: O(n)
 	 * @param int N: number of elements to initialize
 	 */
-	public WeightedQuickUnionUF(int N) {
+	public void WeightedQuickUnionUF(int N) {
 		id = new int[N];
-		for (int i = 0; i < N; i++)
+		for (int i = 0; i < N; i++) {
 			id[i] = i;
 			sz[i] = 1;
+		}
 	}
 
 	/**
@@ -26,7 +27,7 @@ public class WeightedPCQuickUnionUF {
 	 */
 	private int root_onepc(int i) {
 		while (i != id[i]) {
-			id[i] = id[id[i]]
+			id[i] = id[id[i]];
 			i = id[i];
 		}
 		return i;
@@ -40,7 +41,7 @@ public class WeightedPCQuickUnionUF {
 	 * @return boolean: result of whether or not two items in the array are
 	 *  connected
 	 */
-	public boolean connected(int p, int q) { return root(p) == root(q); }
+	public boolean connected(int p, int q) { return root_onepc(p) == root_onepc(q); }
 
 	/**
 	 * Connect different components, specifically the smaller tree to the
@@ -50,8 +51,8 @@ public class WeightedPCQuickUnionUF {
 	 * @param int q: the element of a component to change to
 	 */
 	public void union(int p, int q) {
-		int i = root(p);
-		int j = root(q);
+		int i = root_onepc(p);
+		int j = root_onepc(q);
 		if (sz[i] < sz[j])	{ id[i] = j; sz[j] += sz[i]; }
 		else				{ id[j] = i; sz[i] += sz[j]; }
 	}

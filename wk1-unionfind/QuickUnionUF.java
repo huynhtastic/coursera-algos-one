@@ -4,7 +4,7 @@ public class QuickUnionUF {
 	private int[] id;
 
 	/**
-	 * Constructor set id of each object to itself
+	 * Constructor sets id of each object to itself
 	 * indices are components; values are the parents/roots
 	 * runtime: O(n)
 	 * @param int N: number of elements to initialize

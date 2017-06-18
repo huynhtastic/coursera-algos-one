@@ -5,16 +5,17 @@ public class WeightedQuickUnionUF {
 	private int[] sz;
 
 	/**
-	 * Constructor set id of each object to itself and size at each index to 1
+	 * Constructor sets id of each object to itself and size at each index to 1
 	 * indices are components; values are the parents/roots
 	 * runtime: O(n)
 	 * @param int N: number of elements to initialize
 	 */
 	public WeightedQuickUnionUF(int N) {
 		id = new int[N];
-		for (int i = 0; i < N; i++)
+		for (int i = 0; i < N; i++) {
 			id[i] = i;
 			sz[i] = 1;
+		}
 	}
 
 	/**

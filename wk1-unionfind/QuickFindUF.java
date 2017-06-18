@@ -4,7 +4,7 @@ public class QuickFindUF {
 	private int id[];
 
 	/**
-	 * Constructor set id of each object to itself
+	 * Constructor sets id of each object to itself
 	 * runtime: O(n)
 	 * @param int N: number of elements to initialize
 	 */
