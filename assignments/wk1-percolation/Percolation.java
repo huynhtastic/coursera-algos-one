@@ -1,74 +1,99 @@
-/*package per.algo.wkone
+import edu.princeton.cs.algs4.WeightedQuickUnionUF;
+import edu.princeton.cs.algs4.StdOut;
 
 public class Percolation {
 
-  private int[][] grid;
+    private boolean sitesGrid[][];
+    private WeightedQuickUnionUF connectedGrid;
+    private int gridLength;
+    private int virtualTop;
+    private int virtualBottom;
 
-  public Percolation(int n) throws IllegalArgumentException {    
-    // create n-by-n grid, with all sites blocked
-    if (n > 0) { 
-      grid = new int[n][n];
-      for (int row=0; row < n; row++) {
-        for (int col=0; col < n; col ++) {
-          grid[row][col] = null;
+    public Percolation(int n) throws IllegalArgumentException
+    {
+        if (n > 0) {
+            gridLength = n;
+            sitesGrid = new boolean[n][n]; // initialize closed sites
+            // create WQunionfind object to track connected status and virtual top+bottom sites
+            connectedGrid = new WeightedQuickUnionUF(n*n + 2);
+            virtualTop = gridLength * gridLength;
+            virtualBottom = virtualTop + 1;
+            // connect top row to virtual top and bottom row to virtual bottom
+            for (int i = 0; i < gridLength; i++) {
+                connectedGrid.union(virtualTop, i);
+                connectedGrid.union(virtualBottom, virtualTop - i - 1);
+            }
+        } else {
+            throw new IllegalArgumentException("N cannot be less than 1.");
         }
-      }
-    } else {
-      throw new IllegalArgumentException("n cannot be less than 1.");
     }
-  }
 
-  public void union(int p, int q) {
-    int i = root(p);
-    int i = root(q);
-    if (sz[i] < sz[j])  { id[i] = j; sz[j] += sz[i]; }
-    else        { id[j] = i; sz[i] += sz[j]; }
-  }
-
-  // open site (row i, column j) if it is not open already
-  public void open(int i, int j) {
-    if (!isOpen(i, j)) {
-      
+    private void checkCoords(int row, int col)
+    {
+        if (row < 0 || col < 0 || row > gridLength - 1 || col >  gridLength - 1) 
+            throw new IndexOutOfBoundsException("Row and Col cannot be less than 0 or more than N.");
     }
-  }  
 
-  public boolean isOpen(int i, int j) {    // is site (row i, column j) open?
-    return grid[i-1][j-1] != null;
-  }
+    public void open(int row, int col)
+    {
+        if (!isOpen(row, col)) {
+            sitesGrid[row][col] = true; // open the site
+            int openedSite = gridLength * row + col;
+            // connect with other sites
+            if (row - 1 >= 0) { // check for above site
+                int adjSite = gridLength * (row - 1) + col;
+                if (isOpen(row - 1, col) && !connectedGrid.connected(openedSite, adjSite)) 
+                    connectedGrid.union(openedSite, adjSite);
+            }
+            if (col + 1 < gridLength) { // check for right site
+                int adjSite = gridLength * row + (col + 1);
+                if (isOpen(row, col + 1) && !connectedGrid.connected(openedSite, adjSite))
+                    connectedGrid.union(openedSite,adjSite);
+            }
+            if (row + 1 < gridLength) { // check for below site
+                int adjSite = gridLength * (row + 1) + col;
+                if (isOpen(row + 1, col) && !connectedGrid.connected(openedSite, adjSite)) 
+                    connectedGrid.union(openedSite, adjSite);
+            }
+            if (col - 1 > 0) { // check for left site
+                int adjSite = gridLength * row + (col - 1);
+                if (isOpen(row, col - 1) && !connectedGrid.connected(openedSite, adjSite))
+                    connectedGrid.union(openedSite,adjSite);
+            }
+        }
+    }
 
-  // 
-  public boolean isFull(int i, int j) {    // is site (row i, column j) full?
-  }
-  
-  // public boolean percolates()             // does the system percolate?
-
-  public static void main(String[] args) {  // test client (optional)
-    Percolation p = new Percolation(0);
-    System.out.println(p);
-  }
-
-}*/
-
-public class PercolationStats {
+    public boolean isOpen(int row, int col) 
+    {
+        checkCoords(row, col);
+        return sitesGrid[row][col];
+    }
     
-    public PercolationStats(int n, int trials) {    // perform trials independent experiments on an n-by-n grid
-        for (int i = 0; i < n; i++) {
-            
+    public boolean isFull(int row, int col)
+    {
+        checkCoords(row, col);
+        int queriedSite = gridLength * row + col;
+        return (isOpen(row, col) && connectedGrid.connected(virtualTop, queriedSite));
+    }
+
+    public int numberOfOpenSites()
+    {
+        int sum = 0;
+        for (int row = 0; row < gridLength; row++) {
+            for (int col = 0; col < gridLength; col++) {
+                if (sitesGrid[row][col]) {
+                    sum += 1;
+                }
+            }
         }
+        return sum;
     }
 
-    public double mean() {                          // sample mean of percolation threshold
+    public boolean percolates()
+    {
+        return connectedGrid.connected(virtualTop, virtualBottom);
     }
 
-    public double stddev() {                        // sample standard deviation of percolation threshold
-    }
-
-    public double confidenceLo() {                  // low  endpoint of 95% confidence interval
-    }
-
-    public double confidenceHi() {                  // high endpoint of 95% confidence interval
-    }
-
-    public static void main(String[] args) {        // test client (described below)
+    public static void main(String[] args) {   // test client (optional)
     }
 }
